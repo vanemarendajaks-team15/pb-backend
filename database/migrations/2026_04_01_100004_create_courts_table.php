@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('tournament_id')->constrained('tournaments');
             $table->string('court_name');
+            $table->timestamps();
         });
     }
 

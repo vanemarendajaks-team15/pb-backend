@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
 use App\Models\Court;
 use App\Models\TournamentManager;
+use App\Models\TournamentRegistration;
 
 class Tournament extends Model
 {
@@ -34,5 +35,10 @@ class Tournament extends Model
     public function managers()
     {
         return $this->hasMany(TournamentManager::class);
+    }
+
+    public function registrations()
+    {
+        return $this->hasMany(TournamentRegistration::class);
     }
 }

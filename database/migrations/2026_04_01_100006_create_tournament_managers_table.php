@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->foreignId('tournament_id')->constrained('tournaments');
             $table->foreignId('user_id')->constrained('users');
             $table->string('role');
+            $table->timestamps();
         });
     }
 
