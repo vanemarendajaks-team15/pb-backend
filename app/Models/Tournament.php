@@ -14,7 +14,7 @@ class Tournament extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'location', 'start_date', 'end_date', 'description', 'director_id'
+        'name', 'location', 'start_date', 'end_date', 'image', 'description', 'director_id'
     ];
 
     public function director()
