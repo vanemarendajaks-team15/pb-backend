@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Storage;
 
 class TournamentController extends Controller
 {
-    public function index(?string $status = null)
+    public function index(Request $request)
     {
+        $status = $request->query('status');
         $today = Carbon::today();
 
         $query = Tournament::query()->withCount([
