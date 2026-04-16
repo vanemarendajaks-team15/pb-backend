@@ -14,10 +14,13 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('tournaments', TournamentController::class);
-Route::apiResource('categories', CategoryController::class);
-Route::apiResource('tournament-registrations', TournamentRegistrationController::class);
-Route::apiResource('groups', GroupController::class);
-Route::apiResource('courts', CourtController::class);
-Route::apiResource('games', GameController::class);
-Route::apiResource('tournament-managers', TournamentManagerController::class);
+Route::get('v1/tournaments/{status}', [TournamentController::class, 'index'])
+    ->whereIn('status', ['ended', 'future', 'live']);
+
+Route::apiResource('v1/tournaments', TournamentController::class);
+Route::apiResource('v1/categories', CategoryController::class);
+Route::apiResource('v1/tournament-registrations', TournamentRegistrationController::class);
+Route::apiResource('v1/groups', GroupController::class);
+Route::apiResource('v1/courts', CourtController::class);
+Route::apiResource('v1/games', GameController::class);
+Route::apiResource('v1/tournament-managers', TournamentManagerController::class);

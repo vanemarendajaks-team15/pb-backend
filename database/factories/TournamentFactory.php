@@ -16,6 +16,7 @@ class TournamentFactory extends Factory
             'location' => $this->faker->city(),
             'start_date' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
             'end_date' => $this->faker->dateTimeBetween('+2 days', '+2 months'),
+            'image' => $this->faker->optional()->imageUrl(),
             'description' => $this->faker->sentence(),
             'director_id' => 1, // You may want to seed users first and randomize this
         ];
