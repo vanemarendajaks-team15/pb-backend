@@ -30,9 +30,14 @@ class TournamentController extends Controller
                 ->whereDate('end_date', '>=', $today);
         }
 
-        return $this->withDefaultImage(
-            $query->get()->makeHidden(['created_at', 'updated_at'])
-        );
+        $tournaments = $query->get()->makeHidden(['created_at', 'updated_at']);
+
+        $tournaments->each(function ($tournament) {
+            $tournament->start_date = Carbon::parse($tournament->start_date)->format('d.m.Y');
+            $tournament->end_date = Carbon::parse($tournament->end_date)->format('d.m.Y');
+        });
+
+        return $this->withDefaultImage($tournaments);
     }
 
     public function show($id)
