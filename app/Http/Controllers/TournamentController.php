@@ -30,14 +30,24 @@ class TournamentController extends Controller
                 ->whereDate('end_date', '>=', $today);
         }
 
-        $tournaments = $query->get()->makeHidden(['created_at', 'updated_at']);
+        $defaultImage = Storage::url('images/poster.png');
 
-        $tournaments->each(function ($tournament) {
-            $tournament->start_date = Carbon::parse($tournament->start_date)->format('d.m.Y');
-            $tournament->end_date = Carbon::parse($tournament->end_date)->format('d.m.Y');
+        $tournaments = $query->get()->map(function ($tournament) use ($defaultImage) {
+            return [
+                'id' => $tournament->id,
+                'name' => $tournament->name,
+                'location' => $tournament->location,
+                'description' => $tournament->description,
+                'image' => $tournament->image ?? $defaultImage,
+                'startDate' => Carbon::parse($tournament->start_date)->format('d.m.Y'),
+                'endDate' => Carbon::parse($tournament->end_date)->format('d.m.Y'),
+                'directorId' => $tournament->director_id,
+                'entries' => $tournament->entries,
+                'categories' => $tournament->categories,
+            ];
         });
 
-        return $this->withDefaultImage($tournaments);
+        return response()->json($tournaments);
     }
 
     public function show($id)
