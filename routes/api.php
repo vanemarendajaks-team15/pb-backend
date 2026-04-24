@@ -17,6 +17,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::get('v1/tournaments', [TournamentController::class, 'index'])
     ->whereIn('status', ['ended', 'future', 'live']);
 Route::get('v1/tournaments/{tournament}', [TournamentController::class, 'show']);
+Route::get('v1/games/{game}', [GameController::class, 'show']);
 
 Route::apiResource('v1/tournaments', TournamentController::class);
 Route::apiResource('v1/categories', CategoryController::class);
