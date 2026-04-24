@@ -37,12 +37,41 @@ class TournamentController extends Controller
 
     public function show($id)
     {
-        return $this->withDefaultImage(
-            Tournament::withCount([
+        $tournament = Tournament::withCount([
                 'registrations as entries',
                 'categories as categories',
-            ])->findOrFail($id)->makeHidden(['created_at', 'updated_at'])
-        );
+            ])
+            ->with([
+                'games.court:id,court_name',
+                'games.teamA:id,player1_id,player1_name,player2_id,player2_name',
+                'games.teamA.player1:id,name',
+                'games.teamA.player2:id,name',
+                'games.teamB:id,player1_id,player1_name,player2_id,player2_name',
+                'games.teamB.player1:id,name',
+                'games.teamB.player2:id,name',
+            ])
+            ->findOrFail($id)
+            ->makeHidden(['created_at', 'updated_at']);
+
+        $tournament->setRelation('games', $tournament->games->map(function ($game) {
+            return [
+                'id' => $game->id,
+                'courtName' => $game->court?->court_name,
+                'tournamentId' => $game->tournament_id,
+                'team1Player1Name' => $game->teamA?->player1?->name ?? $game->teamA?->player1_name,
+                'team1Player2Name' => $game->teamA?->player2?->name ?? $game->teamA?->player2_name,
+                'team2Player1Name' => $game->teamB?->player1?->name ?? $game->teamB?->player1_name,
+                'team2Player2Name' => $game->teamB?->player2?->name ?? $game->teamB?->player2_name,
+                'team1Score' => $game->team_a_score,
+                'team2Score' => $game->team_b_score,
+                'servingTeam' => $game->serving_team,
+                'servingPlayer' => $game->serving_player,
+                'status' => $game->status,
+                'scheduledAt' => $game->scheduled_at?->format('Y-m-d H:i'),
+            ];
+        }));
+
+        return $this->withDefaultImage($tournament);
     }
 
     public function store(Request $request)
