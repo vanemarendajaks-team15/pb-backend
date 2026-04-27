@@ -6,7 +6,6 @@ use App\Models\Tournament;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class TournamentController extends Controller
 {
@@ -30,15 +29,13 @@ class TournamentController extends Controller
                 ->whereDate('end_date', '>=', $today);
         }
 
-        $defaultImage = Storage::url('images/poster.png');
-
-        $tournaments = $query->get()->map(function ($tournament) use ($defaultImage) {
+        $tournaments = $query->get()->map(function ($tournament) {
             return [
                 'id' => $tournament->id,
                 'name' => $tournament->name,
                 'location' => $tournament->location,
                 'description' => $tournament->description,
-                'image' => $tournament->image ?? $defaultImage,
+                'image' => $tournament->image,
                 'startDate' => Carbon::parse($tournament->start_date)->format('d.m.Y'),
                 'endDate' => Carbon::parse($tournament->end_date)->format('d.m.Y'),
                 'directorId' => $tournament->director_id,
@@ -52,12 +49,10 @@ class TournamentController extends Controller
 
     public function show($id)
     {
-        return $this->withDefaultImage(
-            Tournament::withCount([
-                'registrations as entries',
-                'categories as categories',
-            ])->findOrFail($id)->makeHidden(['created_at', 'updated_at'])
-        );
+        return Tournament::withCount([
+            'registrations as entries',
+            'categories as categories',
+        ])->findOrFail($id)->makeHidden(['created_at', 'updated_at']);
     }
 
     public function store(Request $request)
@@ -65,12 +60,10 @@ class TournamentController extends Controller
         $tournament = Tournament::create($request->all());
 
         return response()->json(
-            $this->withDefaultImage(
-                $tournament->loadCount([
-                    'registrations as entries',
-                    'categories as categories',
-                ])->makeHidden(['created_at', 'updated_at'])
-            ),
+            $tournament->loadCount([
+                'registrations as entries',
+                'categories as categories',
+            ])->makeHidden(['created_at', 'updated_at']),
             201
         );
     }
@@ -81,12 +74,10 @@ class TournamentController extends Controller
         $tournament->update($request->all());
 
         return response()->json(
-            $this->withDefaultImage(
-                $tournament->loadCount([
-                    'registrations as entries',
-                    'categories as categories',
-                ])->makeHidden(['created_at', 'updated_at'])
-            )
+            $tournament->loadCount([
+                'registrations as entries',
+                'categories as categories',
+            ])->makeHidden(['created_at', 'updated_at'])
         );
     }
 
@@ -94,24 +85,5 @@ class TournamentController extends Controller
     {
         Tournament::destroy($id);
         return response()->json(null, 204);
-    }
-
-    private function withDefaultImage(Tournament|Collection $tournaments): Tournament|Collection
-    {
-        $defaultImage = Storage::url('images/poster.png');
-
-        if ($tournaments instanceof Collection) {
-            return $tournaments->each(function (Tournament $tournament) use ($defaultImage) {
-                if ($tournament->image === null) {
-                    $tournament->image = $defaultImage;
-                }
-            });
-        }
-
-        if ($tournaments->image === null) {
-            $tournaments->image = $defaultImage;
-        }
-
-        return $tournaments;
     }
 }
