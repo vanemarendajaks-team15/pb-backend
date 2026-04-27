@@ -14,12 +14,19 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('v1/tournament/register', [TournamentController::class, 'register']);
+
 Route::get('v1/tournaments', [TournamentController::class, 'index'])
     ->whereIn('status', ['ended', 'future', 'live']);
 
 Route::apiResource('v1/tournaments', TournamentController::class);
 Route::apiResource('v1/categories', CategoryController::class);
-Route::apiResource('v1/tournament-registrations', TournamentRegistrationController::class);
+Route::post(
+    'v1/tournaments/{tournament}/registrations',
+    [TournamentRegistrationController::class, 'store']
+);
+Route::apiResource('v1/tournament-registrations', TournamentRegistrationController::class)
+    ->except(['store']);
 Route::apiResource('v1/groups', GroupController::class);
 Route::apiResource('v1/courts', CourtController::class);
 Route::apiResource('v1/games', GameController::class);
