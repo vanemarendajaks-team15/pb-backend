@@ -21,10 +21,6 @@ Route::get('v1/tournaments', [TournamentController::class, 'index'])
 
 Route::apiResource('v1/tournaments', TournamentController::class);
 Route::apiResource('v1/categories', CategoryController::class);
-Route::post(
-    'v1/tournaments/{tournament}/registrations',
-    [TournamentRegistrationController::class, 'store']
-);
 Route::apiResource('v1/tournament-registrations', TournamentRegistrationController::class)
     ->except(['store']);
 Route::apiResource('v1/groups', GroupController::class);
