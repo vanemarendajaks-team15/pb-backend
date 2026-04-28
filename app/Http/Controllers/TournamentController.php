@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterTournamentRequest;
 use App\Models\Tournament;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -9,6 +10,25 @@ use Illuminate\Http\Request;
 
 class TournamentController extends Controller
 {
+    public function register(RegisterTournamentRequest $request)
+    {
+        $data = $request->validated('data');
+
+        $tournament = Tournament::create([
+            'name' => $data['name'],
+            'location' => $data['location'],
+            'start_date' => Carbon::parse($data['startDate'])->utc(),
+            'end_date' => Carbon::parse($data['endDate'])->utc(),
+            'image' => $data['posterReference'],
+            'description' => $data['description'],
+            'director_id' => $data['directorId'],
+        ]);
+
+        return response()->json([
+            'id' => $tournament->id,
+        ], 201);
+    }
+
     public function index(Request $request)
     {
         $status = $request->query('status');
